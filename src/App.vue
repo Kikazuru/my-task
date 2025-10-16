@@ -1,15 +1,9 @@
 <template>
-  <UApp>
-    <UHeader />
-
-    <UMain>
-      <NuxtLayout>
-        <NuxtPage />
-      </NuxtLayout>
-    </UMain>
-
-    <UFooter />
-  </UApp>
+  <u-app>
+    <u-main>
+      <router-view></router-view>
+    </u-main>
+  </u-app>
 </template>
 
 <script setup lang="ts"></script>

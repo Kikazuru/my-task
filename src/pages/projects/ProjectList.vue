@@ -9,15 +9,15 @@
           <template #default>
             <div class="flex flex-col gap-2">
               <div class="flex justify-between align-middle border-1 p-2 rounded">
-                <div>On Progress</div>
-                <u-badge color="primary" label="9"></u-badge>
+                <div>Upcoming</div>
+                <u-badge color="info" label="9"></u-badge>
               </div>
               <div class="flex justify-between align-middle border-1 p-2 rounded">
-                <div>Warning</div>
-                <u-badge color="warning" label="9"></u-badge>
+                <div>On Going</div>
+                <u-badge color="success" label="9"></u-badge>
               </div>
               <div class="flex justify-between align-middle border-1 p-2 rounded">
-                <div>Expired</div>
+                <div>Overdue</div>
                 <u-badge color="error" label="9"></u-badge>
               </div>
             </div>

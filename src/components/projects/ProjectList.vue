@@ -26,7 +26,7 @@ import ProjectPreview from './ProjectPreview.vue'
 const projects = ref<Array<Project>>([])
 
 const page = ref(1)
-const limit = ref(10)
+const limit = ref(8)
 const total = ref(0)
 
 watchEffect(() => {

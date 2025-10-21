@@ -2,7 +2,7 @@
   <u-container>
     <div class="flex my-5 p-5 rounded-lg bg-default ring ring-default justify-between">
       <u-breadcrumb :items="[]"></u-breadcrumb>
-      <u-button class="cursor-pointer" @click="add">add</u-button>
+      <u-button class="cursor-pointer" @click="create">create</u-button>
     </div>
 
     <div class="grid grid-cols-4 gap-5 my-5">
@@ -29,14 +29,27 @@ const page = ref(1)
 const limit = ref(8)
 const total = ref(0)
 
-watchEffect(() => {
-  loadProjects()
-})
+const toast = useToast()
 
-function add() {
-  projectRepo.create({ name: 'New Project' }).then(() => {
-    loadProjects()
-  })
+function create() {
+  projectRepo
+    .create({ name: 'New Project' })
+    .then(() => {
+      loadProjects()
+      toast.add({
+        title: 'Created',
+        description: 'Project successfully created',
+        color: 'success',
+        duration: 2000,
+      })
+    })
+    .catch(() => {
+      toast.add({
+        title: 'Error',
+        description: 'Failed to create project',
+        color: 'error',
+      })
+    })
 }
 
 function loadProjects() {
@@ -53,6 +66,10 @@ function loadProjects() {
     total.value = count
   })
 }
+
+watchEffect(() => {
+  loadProjects()
+})
 </script>
 
 <style scoped></style>

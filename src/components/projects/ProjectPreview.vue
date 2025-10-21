@@ -13,14 +13,32 @@ const { project } = defineProps<{
   project: Project
 }>()
 
+const toast = useToast()
+
 const emits = defineEmits<{
   (e: 'removed', id: Project['id']): void
 }>()
 
 function remove(id: Project['id']) {
-  projectRepo.remove(id).then(() => {
-    emits('removed', id)
-  })
+  projectRepo
+    .remove(id)
+    .then(() => {
+      toast.add({
+        title: 'Removed',
+        description: 'Project successfully removed',
+        color: 'success',
+        duration: 2000,
+      })
+
+      emits('removed', id)
+    })
+    .catch(() => {
+      toast.add({
+        title: 'Error',
+        description: 'Failed to remove project',
+        color: 'error',
+      })
+    })
 }
 </script>
 

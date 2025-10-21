@@ -12,6 +12,7 @@
           color="neutral"
           variant="ghost"
         ></u-button>
+        <u-button icon="i-lucide-refresh-cw" color="neutral" variant="outline">sync</u-button>
       </template>
     </u-header>
     <u-main>

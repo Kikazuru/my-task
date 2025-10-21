@@ -10,15 +10,6 @@ export class MyAppDB extends Dexie {
       projects: '++id, name',
     })
   }
-
-  add(project: Project) {
-    this.projects.add(project)
-  }
-
-  remove(id: Project['id']) {
-    if (!id) return
-    this.projects.delete(id)
-  }
 }
 
 export const db = new MyAppDB()

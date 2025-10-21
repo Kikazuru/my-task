@@ -1,51 +1,57 @@
 <template>
   <u-container>
-    <u-page-hero title="Projects"></u-page-hero>
+    <div class="flex my-5 p-5 rounded-lg bg-default ring ring-default justify-between">
+      <u-breadcrumb :items="[]"></u-breadcrumb>
+      <u-button class="cursor-pointer" @click="add">add</u-button>
+    </div>
 
-    <u-button @click="add">add</u-button>
-    <div class="grid grid-cols-4 gap-5">
+    <div class="grid grid-cols-4 gap-5 my-5">
       <template v-for="(project, i) in projects" :key="i">
-        <project-card :project="project" :remove="remove" />
+        <project-preview :project="project" @removed="loadProjects" />
       </template>
+    </div>
+
+    <div class="w-full flex justify-center my-5">
+      <u-pagination v-model:page="page" :total="total"></u-pagination>
     </div>
   </u-container>
 </template>
 
 <script setup lang="ts">
-import ProjectCard from '@/components/projects/ProjectCard.vue'
-import { db } from '@/db'
-import { ProjectRepository } from '@/db/repositories/project'
+import projectRepo from '@/db/repositories/project'
 import type { Project } from '@/models/project'
-import { liveQuery } from 'dexie'
-import { onBeforeUnmount, onMounted, ref } from 'vue'
+import { ref, watchEffect } from 'vue'
+import ProjectPreview from './ProjectPreview.vue'
 
 const projects = ref<Array<Project>>([])
 
-const repo = new ProjectRepository(db.projects)
+const page = ref(1)
+const limit = ref(10)
+const total = ref(0)
 
-onMounted(() => {
-  const projectsLiveQuery = liveQuery(() => db.projects.toArray())
-  const subscription = projectsLiveQuery.subscribe({
-    next: (result) => {
-      projects.value = result
-    },
-    error: (error) => {
-      console.error('Failed to fetch projects:', error)
-    },
-  })
-
-  // Clean up subscription when component is unmounted
-  onBeforeUnmount(() => {
-    subscription.unsubscribe()
-  })
+watchEffect(() => {
+  loadProjects()
 })
 
 function add() {
-  repo.create({ name: 'New Project' })
+  projectRepo.create({ name: 'New Project' }).then(() => {
+    loadProjects()
+  })
 }
 
-function remove(id: Project['id']) {
-  repo.remove(id)
+function loadProjects() {
+  projectRepo
+    .list({
+      page: page.value,
+      limit: limit.value,
+    })
+    .then((data) => {
+      projects.value = data
+    })
+
+  projectRepo.count().then((count) => {
+    total.value = count
+  })
 }
 </script>
 

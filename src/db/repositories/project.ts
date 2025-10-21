@@ -1,12 +1,20 @@
 import type { Project } from '@/models/project'
 import type Dexie from 'dexie'
+import { db } from '..'
 
-export interface IProjectRepository {
-  create(project: Project): Promise<void>
-  remove(id: Project['id']): Promise<void>
+interface IPagination {
+  page: number
+  limit: number
 }
 
-export class ProjectRepository implements IProjectRepository {
+interface IProjectRepository {
+  create(project: Project): Promise<void>
+  remove(id: Project['id']): Promise<void>
+  list(pagination: IPagination): Promise<Project[]>
+  count(): Promise<number>
+}
+
+class ProjectRepository implements IProjectRepository {
   private db: Dexie.Table<Project, Project['id']>
 
   constructor(db: Dexie.Table<Project, Project['id']>) {
@@ -20,4 +28,17 @@ export class ProjectRepository implements IProjectRepository {
   async remove(id: Project['id']): Promise<void> {
     await this.db.delete(id)
   }
+
+  async list(pagination: IPagination): Promise<Project[]> {
+    return await this.db
+      .offset((pagination.page - 1) * pagination.limit)
+      .limit(pagination.limit)
+      .toArray()
+  }
+
+  async count(): Promise<number> {
+    return await this.db.count()
+  }
 }
+
+export default new ProjectRepository(db.projects)

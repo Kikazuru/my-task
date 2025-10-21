@@ -12,7 +12,7 @@
     </div>
 
     <div class="w-full flex justify-center my-5">
-      <u-pagination v-model:page="page" :total="total"></u-pagination>
+      <u-pagination v-model:page="page" :items-per-page="limit" :total="total"></u-pagination>
     </div>
   </u-container>
 </template>

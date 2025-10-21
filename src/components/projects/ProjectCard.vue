@@ -17,15 +17,15 @@
     </template>
     <template #default>
       <div class="flex flex-col gap-2">
-        <div class="flex justify-between align-middle border-1 p-2 rounded">
+        <div class="flex justify-between align-middle p-2 rounded-lg bg-default ring ring-default">
           <div>Upcoming</div>
           <u-badge color="info" label="9"></u-badge>
         </div>
-        <div class="flex justify-between align-middle border-1 p-2 rounded">
+        <div class="flex justify-between align-middle p-2 rounded-lg bg-default ring ring-default">
           <div>On Going</div>
           <u-badge color="success" label="9"></u-badge>
         </div>
-        <div class="flex justify-between align-middle border-1 p-2 rounded">
+        <div class="flex justify-between align-middle p-2 rounded-lg bg-default ring ring-default">
           <div>Overdue</div>
           <u-badge color="error" label="9"></u-badge>
         </div>

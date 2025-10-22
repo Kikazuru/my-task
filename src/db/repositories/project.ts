@@ -39,6 +39,10 @@ class ProjectRepository implements IProjectRepository {
   async count(): Promise<number> {
     return await this.db.count()
   }
+
+  async detail(id: Project['id']) {
+    return await this.db.get(id)
+  }
 }
 
 export default new ProjectRepository(db.projects)

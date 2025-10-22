@@ -1,8 +1,10 @@
 <template>
   <u-container>
-    <u-page-hero :title="`Project ${id}`"></u-page-hero>
+    <u-page-hero :title="project?.name"></u-page-hero>
 
-    <div class="flex flex-col gap-2">
+    <u-button @click="create">create</u-button>
+
+    <div class="flex flex-col space-y-4">
       <template v-for="(task, i) in tasks" :key="i">
         <div class="flex justify-between border-1 rounded p-2">
           <div class="flex gap-2 flex-1">
@@ -10,26 +12,36 @@
               :ui="{
                 root: 'items-center',
               }"
-              v-model="task.value.isCompleted"
+              :model-value="task.completedAt != null"
+              @click="toggleComplete(task)"
             ></u-checkbox>
             <div
-              @click="task.value.isCompleted = !task.value.isCompleted"
-              :class="{ 'line-through': task.value.isCompleted }"
+              @click="toggleComplete(task)"
+              :class="{ 'line-through': task.completedAt != null }"
               class="cursor-pointer flex-1"
             >
-              {{ task.value.title }}
+              {{ task.title }}
             </div>
           </div>
 
           <div>
-            <u-badge v-if="task.value.isCompleted" label="Completed"></u-badge>
-            <u-badge v-else-if="now < task.value.startAt" color="info" label="Upcoming"></u-badge>
+            <u-badge v-if="task.completedAt" label="Completed"></u-badge>
             <u-badge
-              v-else-if="task.value.startAt < now && now < task.value.endAt"
+              v-else-if="task.startAt && now < task.startAt"
+              color="info"
+              label="Upcoming"
+            ></u-badge>
+            <u-badge
+              v-else-if="task.startAt && task.endAt && task.startAt < now && now < task.endAt"
               color="neutral"
               label="On Going"
             ></u-badge>
-            <u-badge v-else-if="now > task.value.endAt" color="error" label="Overdue"></u-badge>
+            <u-badge
+              v-else-if="task.endAt && now > task.endAt"
+              color="error"
+              label="Overdue"
+            ></u-badge>
+            <u-badge v-else color="info" label="Uncompleted"></u-badge>
           </div>
         </div>
       </template>
@@ -38,8 +50,12 @@
 </template>
 
 <script setup lang="ts">
+import projectRepo from '@/db/repositories/project'
+import taskRepo from '@/db/repositories/task'
+import type { Project } from '@/models/project'
+import type { Task } from '@/models/task'
 import { useNow } from '@vueuse/core'
-import { ref } from 'vue'
+import { ref, watchEffect } from 'vue'
 
 const now = useNow()
 
@@ -47,20 +63,52 @@ const { id } = defineProps<{
   id: string
 }>()
 
-const tasks = Array.from({ length: 10 }, (_, i) => {
-  const startAt = getRandomDate(new Date('2025-01-01'), new Date('2025-12-31'))
-  const endAt = getRandomDate(startAt, new Date('2025-12-31'))
-  return ref({
-    title: `Task ${i}`,
-    isCompleted: false,
-    startAt: startAt,
-    endAt: endAt,
-  })
-})
+const project = ref<Project>()
+const tasks = ref<Array<Task>>([])
 
-function getRandomDate(start: Date, end: Date) {
-  return new Date(start.getTime() + Math.random() * (end.getTime() - start.getTime()))
+projectRepo
+  .detail(Number(id))
+  .then((data) => {
+    project.value = data
+  })
+  .catch((error) => {
+    console.error(error)
+  })
+
+function toggleComplete(task: Task) {
+  if (task.completedAt) task.completedAt = undefined
+  else task.completedAt = new Date()
 }
+
+function listTasks() {
+  taskRepo
+    .listByProject(Number(id))
+    .then((data) => {
+      tasks.value = data
+    })
+    .catch((error) => {
+      console.error(error)
+    })
+}
+
+function create() {
+  const newTask: Task = {
+    projectId: Number(id),
+    title: 'New Task',
+  }
+  taskRepo
+    .create(newTask)
+    .then(() => {
+      listTasks()
+    })
+    .catch((error) => {
+      console.error(error)
+    })
+}
+
+watchEffect(() => {
+  listTasks()
+})
 </script>
 
 <style scoped></style>

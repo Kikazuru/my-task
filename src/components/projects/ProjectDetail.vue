@@ -4,7 +4,7 @@
 
     <u-button @click="create">create</u-button>
 
-    <div class="flex flex-col space-y-4">
+    <div class="flex flex-col space-y-4 mt-4">
       <template v-for="(task, i) in tasks" :key="i">
         <div class="flex justify-between border-1 rounded p-2">
           <div class="flex gap-2 flex-1">
@@ -80,9 +80,32 @@ projectRepo
     console.error(error)
   })
 
+const toast = useToast()
+
 function toggleComplete(task: Task) {
   if (task.completedAt) task.completedAt = undefined
   else task.completedAt = new Date()
+
+  taskRepo
+    .update(task.id, task)
+    .then(() => {
+      if (task.completedAt)
+        toast.add({
+          title: 'Completed',
+          color: 'success',
+          description: `${task.title} marked as completed.`,
+        })
+      else
+        toast.add({
+          title: 'Uncompleted',
+          color: 'info',
+          description: `${task.title} marked as uncompleted.`,
+        })
+      listTasks()
+    })
+    .catch((error) => {
+      console.error(error)
+    })
 }
 
 function listTasks() {

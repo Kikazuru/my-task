@@ -4,6 +4,9 @@ import { db } from '..'
 
 interface ITask {
   create(task: Task): Promise<void>
+  update(id: Task['id'], updates: Partial<Task>): Promise<void>
+  remove(id: Task['id']): Promise<void>
+  listByProject(projectId: number): Promise<Task[]>
 }
 
 class TaskRepository implements ITask {
@@ -14,6 +17,14 @@ class TaskRepository implements ITask {
   }
   async create(task: Task): Promise<void> {
     await this.db.add(task)
+  }
+
+  async remove(id: Task['id']): Promise<void> {
+    await this.db.delete(id)
+  }
+
+  async update(id: Task['id'], updates: Partial<Task>): Promise<void> {
+    await this.db.update(id, updates)
   }
 
   async listByProject(projectId: number): Promise<Task[]> {

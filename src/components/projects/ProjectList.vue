@@ -6,14 +6,20 @@
       </project-create>
     </div>
 
-    <div class="grid grid-cols-4 gap-5 my-5">
-      <template v-for="(project, i) in projects" :key="i">
-        <project-preview :project="project" @removed="loadProjects" />
-      </template>
+    <div v-if="projects.length > 0">
+      <div class="grid grid-cols-4 gap-5 my-5">
+        <template v-for="(project, i) in projects" :key="i">
+          <project-preview :project="project" @removed="loadProjects" />
+        </template>
+      </div>
+
+      <div class="w-full flex justify-center my-5">
+        <u-pagination v-model:page="page" :items-per-page="limit" :total="total"></u-pagination>
+      </div>
     </div>
 
-    <div class="w-full flex justify-center my-5">
-      <u-pagination v-model:page="page" :items-per-page="limit" :total="total"></u-pagination>
+    <div v-else>
+      <div>No projects found</div>
     </div>
   </u-container>
 </template>

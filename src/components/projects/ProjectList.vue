@@ -1,8 +1,9 @@
 <template>
   <u-container>
-    <div class="flex my-5 p-5 rounded-lg bg-default ring ring-default justify-between">
-      <u-breadcrumb :items="[]"></u-breadcrumb>
-      <u-button class="cursor-pointer" @click="create">create</u-button>
+    <div class="flex justify-end my-5 p-3">
+      <project-create @created="loadProjects">
+        <u-button class="cursor-pointer">create</u-button>
+      </project-create>
     </div>
 
     <div class="grid grid-cols-4 gap-5 my-5">
@@ -21,6 +22,7 @@
 import projectRepo from '@/db/repositories/project'
 import type { Project } from '@/models/project'
 import { ref, watchEffect } from 'vue'
+import ProjectCreate from './ProjectCreate.vue'
 import ProjectPreview from './ProjectPreview.vue'
 
 const projects = ref<Array<Project>>([])
@@ -28,29 +30,6 @@ const projects = ref<Array<Project>>([])
 const page = ref(1)
 const limit = ref(8)
 const total = ref(0)
-
-const toast = useToast()
-
-function create() {
-  projectRepo
-    .create({ name: 'New Project' })
-    .then(() => {
-      loadProjects()
-      toast.add({
-        title: 'Created',
-        description: 'Project successfully created',
-        color: 'success',
-        duration: 2000,
-      })
-    })
-    .catch(() => {
-      toast.add({
-        title: 'Error',
-        description: 'Failed to create project',
-        color: 'error',
-      })
-    })
-}
 
 function loadProjects() {
   projectRepo

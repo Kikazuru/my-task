@@ -6,6 +6,7 @@ interface ITask {
   create(task: Task): Promise<void>
   update(id: Task['id'], updates: Partial<Task>): Promise<void>
   remove(id: Task['id']): Promise<void>
+  removeByProject(projectId: number): Promise<void>
   listByProject(projectId: number): Promise<Task[]>
 }
 
@@ -21,6 +22,10 @@ class TaskRepository implements ITask {
 
   async remove(id: Task['id']): Promise<void> {
     await this.db.delete(id)
+  }
+
+  async removeByProject(projectId: number): Promise<void> {
+    await this.db.where('projectId').equals(projectId).delete()
   }
 
   async update(id: Task['id'], updates: Partial<Task>): Promise<void> {

@@ -25,22 +25,27 @@
           </div>
 
           <div>
-            <u-badge v-if="task.completedAt" label="Completed"></u-badge>
-            <u-badge
+            <u-tooltip v-if="task.completedAt" :text="`${formatDate(task.completedAt)}`">
+              <u-badge label="Completed"></u-badge>
+            </u-tooltip>
+            <u-tooltip
               v-else-if="task.startAt && now < task.startAt"
-              color="info"
-              label="Upcoming"
-            ></u-badge>
-            <u-badge
+              :text="`${formatDate(task.startAt)} }`"
+            >
+              <u-badge color="info" label="Upcoming"></u-badge>
+            </u-tooltip>
+            <u-tooltip
               v-else-if="task.startAt && task.endAt && task.startAt < now && now < task.endAt"
-              color="neutral"
-              label="On Going"
-            ></u-badge>
-            <u-badge
+              :text="`${formatDate(task.startAt)} - ${formatDate(task.endAt)}`"
+            >
+              <u-badge color="neutral" label="On Going"></u-badge>
+            </u-tooltip>
+            <u-tooltip
               v-else-if="task.endAt && now > task.endAt"
-              color="error"
-              label="Overdue"
-            ></u-badge>
+              :text="`${formatDate(task.endAt)}`"
+            >
+              <u-badge color="error" label="Overdue"></u-badge>
+            </u-tooltip>
             <u-badge v-else color="info" label="Uncompleted"></u-badge>
           </div>
         </div>
@@ -54,7 +59,7 @@ import projectRepo from '@/db/repositories/project'
 import taskRepo from '@/db/repositories/task'
 import type { Project } from '@/models/project'
 import type { Task } from '@/models/task'
-import { useNow } from '@vueuse/core'
+import { useDateFormat, useNow } from '@vueuse/core'
 import { ref, watchEffect } from 'vue'
 
 const now = useNow()
@@ -109,6 +114,10 @@ function create() {
 watchEffect(() => {
   listTasks()
 })
+
+function formatDate(date: Date) {
+  return useDateFormat(date, 'DD MMM YYYY HH:mm').value
+}
 </script>
 
 <style scoped></style>
